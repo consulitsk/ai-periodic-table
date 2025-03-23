@@ -1,35 +1,26 @@
-# 🧠 Prompt to Generate the Interactive Periodic Table Page
+Create a fully functional HTML page that displays an interactive periodic table of elements using React (via UMD), Tailwind CSS, and Babel standalone. The page must be a single `.html` file with no build step.
 
-Create a fully functional and interactive periodic table web page using only React (via UMD), Tailwind CSS, and no build step. The page should work entirely in the browser as a standalone `.html` file.
-
-## 💡 Requirements
-
-- Use **React** and **ReactDOM** from CDN (UMD builds).
-- Use **TailwindCSS** for all styling.
-- Use **Babel standalone** in the browser to transform JSX.
-- Fetch data from this JSON source:
-  `https://rawcdn.githack.com/Bowserinator/Periodic-Table-JSON/master/PeriodicTableJSON.json`
-- Layout the periodic table using a **CSS grid** based on the `xpos` and `ypos` properties.
-- For each element, display:
-  - Symbol
+Requirements:
+- Use React 18 and ReactDOM via UMD CDN.
+- Use TailwindCSS for styling.
+- Use Babel standalone for JSX transformation in-browser.
+- Load JSON data from: https://rawcdn.githack.com/Bowserinator/Periodic-Table-JSON/master/PeriodicTableJSON.json
+- Render a responsive grid layout based on `xpos` and `ypos`.
+- Each element tile must display:
+  - Symbol (large, bold)
   - Atomic number
   - Name
-  - Rounded atomic mass
-- Use **colored backgrounds** to represent different categories using Tailwind classes.
-- On click, show a **detailed view** with:
-  - Name, Symbol, Atomic Number
-  - Atomic Mass, Category, Phase
-  - Summary, Discovered By, Electron Configuration
-  - Bohr model image (`bohr_model_image`)
-  - 3D model via `<model-viewer>` if available (`bohr_model_3d`)
-- Ensure `<model-viewer>` works properly by importing it as a module.
-- Include a color **legend** for all used element categories.
-- The final result must work as a single self-contained `.html` file (openable via browser).
-
-## 📊 Category Colors
-
-Assign a unique Tailwind background color class (e.g. `bg-red-200`, `bg-blue-100`, etc.) to each element category. Do not hardcode specific colors—let the model generate a suitable set of distinct colors automatically for visual distinction.
-
-
-## ✅ Output
-A complete, standalone `.html` file that renders the periodic table with interactive behavior, styled via Tailwind, and enhanced with 3D visualization.
+  - Atomic mass (rounded to 3 decimals)
+- Use `min-w-[3.5rem]` and `w-full` to allow tiles to fill the grid cell while preserving a minimum width.
+- Color tiles by category using Tailwind background classes.
+- Include a legend with category labels and matching colors.
+- Clicking an element opens a modal:
+  - Max height: 90vh, scrollable
+  - Closes on clicking overlay
+  - Shows detailed info: name, symbol, number, mass, category, phase, summary, discovered_by, electron configuration, link to Wikipedia.
+  - If `bohr_model_3d` is available, render using `<model-viewer>` with `bohr_model_image` as poster.
+  - If only `bohr_model_image` exists, show it as fallback.
+- Include model-viewer via:
+  - `<script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>`
+  - `<script nomodule src="https://unpkg.com/@google/model-viewer/dist/model-viewer-legacy.js"></script>`
+- Ensure grid is scrollable horizontally on screens smaller than 1200px using CSS media queries.

@@ -7,27 +7,36 @@
     <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script nomodule src="https://unpkg.com/@google/model-viewer/dist/model-viewer-legacy.js"></script>
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+      @media (max-width: 1200px) {
+        .periodic-grid {
+          overflow-x: auto;
+          min-width: 1200px;
+        }
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root" class="min-w-[1200px] w-full overflow-auto"></div>
     <script type="text/babel">
       const { useState, useEffect } = React;
 
       const categoryColors = {
-  "transition metal": "bg-pink-200",
-  "actinide": "bg-cyan-200",
-  "lanthanide": "bg-teal-200",
-  "diatomic nonmetal": "bg-green-200",
-  "polyatomic nonmetal": "bg-lime-200",
-  "noble gas": "bg-blue-200",
-  "alkali metal": "bg-red-200",
-  "alkaline earth metal": "bg-orange-200",
-  "metalloid": "bg-yellow-200",
-  "post-transition metal": "bg-indigo-200",
-  "unknown": "bg-gray-200"
-};
+        "transition metal": "bg-pink-200",
+        "actinide": "bg-cyan-200",
+        "lanthanide": "bg-teal-200",
+        "diatomic nonmetal": "bg-green-200",
+        "polyatomic nonmetal": "bg-lime-200",
+        "noble gas": "bg-blue-200",
+        "alkali metal": "bg-red-200",
+        "alkaline earth metal": "bg-orange-200",
+        "metalloid": "bg-yellow-200",
+        "post-transition metal": "bg-indigo-200",
+        "unknown": "bg-gray-200"
+      };
 
       function App() {
         const [fullElements, setFullElements] = useState([]);
@@ -40,13 +49,13 @@
         }, []);
 
         return (
-          <div className="p-4">
+          <div className="p-4 min-w-[1200px]">
             <h1 className="text-3xl font-bold mb-6 text-center">Interactive Periodic Table</h1>
-            <div className="grid grid-cols-[repeat(18,minmax(0,1fr))] gap-1" style={{ gridAutoRows: 'minmax(60px, auto)' }}>
+            <div className="periodic-grid grid grid-cols-[repeat(18,minmax(0,1fr))] gap-px" style={{ gridAutoRows: 'minmax(60px, auto)' }}>
               {fullElements.map((el) => (
                 <div
                   key={el.number}
-                  className={`text-center text-xs p-2 cursor-pointer border rounded ${categoryColors[el.category?.toLowerCase()] || "bg-gray-100"}`}
+                  className={`text-center text-xs p-1 cursor-pointer border rounded min-w-14 ${categoryColors[el.category?.toLowerCase()] || "bg-gray-100"}`}
                   style={{ gridColumnStart: el.xpos, gridRowStart: el.ypos }}
                   onClick={() => setSelectedElement(el)}
                 >
@@ -68,8 +77,14 @@
             </div>
 
             {selectedElement && (
-              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                <div className="bg-white p-6 rounded max-w-xl w-full max-h-[80vh] overflow-y-auto">
+              <div
+                className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center"
+                onClick={() => setSelectedElement(null)}
+              >
+                <div
+                  className="bg-white p-6 rounded max-w-xl w-full max-h-[90vh] overflow-y-auto relative"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <div className="flex justify-between items-center mb-4">
                     <h3 className="text-xl font-bold">{selectedElement.name} ({selectedElement.symbol})</h3>
                     <button onClick={() => setSelectedElement(null)} className="text-gray-500 hover:text-black">✕</button>
@@ -83,17 +98,7 @@
                     <p><strong>Discovered by:</strong> {selectedElement.discovered_by || "Unknown"}</p>
                     <p><strong>Electron Configuration:</strong> {selectedElement.electron_configuration}</p>
                     <p><a href={selectedElement.source} target="_blank" rel="noreferrer" className="text-blue-500 underline">Wikipedia</a></p>
-                    {selectedElement.bohr_model_image && (
-                      <div className="mt-4">
-                        <strong>Bohr Model Image:</strong>
-                        <img
-                          src={selectedElement.bohr_model_image}
-                          alt={`Bohr model of ${selectedElement.name}`}
-                          className="w-full max-h-64 object-contain border rounded"
-                        />
-                      </div>
-                    )}
-                    {selectedElement.bohr_model_3d && (
+                    {selectedElement.bohr_model_3d ? (
                       <div className="mt-4">
                         <strong>3D Model:</strong>
                         <model-viewer
@@ -103,8 +108,28 @@
                           auto-rotate
                           background-color="#ffffff"
                           style={{ width: "100%", height: "300px" }}
-                        ></model-viewer>
+                        >
+                          {selectedElement.bohr_model_image && (
+                            <img
+                              src={selectedElement.bohr_model_image}
+                              alt={`Bohr model of ${selectedElement.name}`}
+                              className="w-full max-h-64 object-contain border rounded"
+                              slot="poster"
+                            />
+                          )}
+                        </model-viewer>
                       </div>
+                    ) : (
+                      selectedElement.bohr_model_image && (
+                        <div className="mt-4">
+                          <strong>Bohr Model Image:</strong>
+                          <img
+                            src={selectedElement.bohr_model_image}
+                            alt={`Bohr model of ${selectedElement.name}`}
+                            className="w-full max-h-64 object-contain border rounded"
+                          />
+                        </div>
+                      )
                     )}
                   </div>
                 </div>
